@@ -1,0 +1,14 @@
+main: eu.hiddenite.AbsurdHatPlugin
+name: AbsurdHat
+version: 1.0.0
+api-version: 1.14
+author: Hiddenite
+commands:
+  hat:
+    permission: hiddenite.hat
+    description: "Switch your helmet to an absurd one!"
+    usage: "/<command>"
+permissions:
+  hiddenite.hat:
+    description: "Allows the /hat command"
+    default: op
