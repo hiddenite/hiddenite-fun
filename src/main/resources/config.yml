@@ -1,3 +1,6 @@
 messages:
-  already-something-in-helmet-slot: "§cYou need to remove your current helmet first."
-  nothing-in-main-hand: "§cPlace the item you want to equip in your hand."
+  hat:
+    already-something-in-helmet-slot: "§cYou need to remove your current helmet first."
+    nothing-in-main-hand: "§cPlace the item you want to equip in your hand."
+  iframe:
+    look-at-frame: "§cLook at the item frame you wish to render invisible."

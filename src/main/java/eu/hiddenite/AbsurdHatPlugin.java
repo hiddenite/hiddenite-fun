@@ -12,5 +12,10 @@ public class AbsurdHatPlugin extends JavaPlugin {
         if (hatCommand != null) {
             hatCommand.setExecutor(new HatCommand(getConfig()));
         }
+
+        PluginCommand invisibleFrameCommand = getCommand("iframe");
+        if (invisibleFrameCommand != null) {
+            invisibleFrameCommand.setExecutor(new InvisibleFrameCommand(getConfig()));
+        }
     }
 }

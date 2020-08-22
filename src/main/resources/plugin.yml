@@ -8,7 +8,14 @@ commands:
     permission: hiddenite.hat
     description: "Switch your helmet to an absurd one!"
     usage: "/<command>"
+  iframe:
+    permission: hiddenite.iframe
+    description: "Make item frames invisible!"
+    usage: "/<command>"
 permissions:
   hiddenite.hat:
     description: "Allows the /hat command"
+    default: op
+  hiddenite.iframe:
+    description: "Allows the /iframe command"
     default: op

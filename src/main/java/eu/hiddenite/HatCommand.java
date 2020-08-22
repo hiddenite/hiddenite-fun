@@ -7,6 +7,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,12 +17,15 @@ public class HatCommand implements CommandExecutor, TabCompleter {
     private String nothingInMainHand;
 
     public HatCommand(FileConfiguration configuration) {
-        alreadySomethingInHelmetSlot = configuration.getString("messages.already-something-in-helmet-slot");
-        nothingInMainHand = configuration.getString("messages.nothing-in-main-hand");
+        alreadySomethingInHelmetSlot = configuration.getString("messages.hat.already-something-in-helmet-slot");
+        nothingInMainHand = configuration.getString("messages.hat.nothing-in-main-hand");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String alias,
+                             String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
@@ -48,7 +52,10 @@ public class HatCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender,
+                                      @NotNull Command command,
+                                      @NotNull String alias,
+                                      String[] args) {
         return Collections.emptyList();
     }
 }
