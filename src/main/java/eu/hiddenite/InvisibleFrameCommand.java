@@ -63,7 +63,7 @@ public class InvisibleFrameCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        selectedFrame.setVisible(false);
+        selectedFrame.setVisible(!selectedFrame.isVisible());
         selectedFrame.getWorld().spawnParticle(
                 Particle.SPELL_MOB,
                 selectedFrame.getLocation(),
