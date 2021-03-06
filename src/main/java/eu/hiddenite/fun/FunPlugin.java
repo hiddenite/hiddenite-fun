@@ -1,9 +1,9 @@
-package eu.hiddenite;
+package eu.hiddenite.fun;
 
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class AbsurdHatPlugin extends JavaPlugin {
+public class FunPlugin extends JavaPlugin {
     @Override
     public void onEnable()  {
         saveDefaultConfig();

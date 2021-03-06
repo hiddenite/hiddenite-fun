@@ -1,4 +1,4 @@
-package eu.hiddenite;
+package eu.hiddenite.fun;
 
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -16,12 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class InvisibleFrameCommand implements CommandExecutor, TabCompleter {
     private String lookAtFrame;
-
-    Logger logger = Logger.getLogger("invisible-frame");
 
     public InvisibleFrameCommand(FileConfiguration configuration) {
         lookAtFrame = configuration.getString("messages.iframe.look-at-frame");

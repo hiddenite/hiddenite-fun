@@ -1,4 +1,4 @@
-package eu.hiddenite;
+package eu.hiddenite.fun;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
