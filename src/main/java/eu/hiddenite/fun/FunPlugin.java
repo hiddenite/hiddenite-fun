@@ -17,5 +17,9 @@ public class FunPlugin extends JavaPlugin {
         if (invisibleFrameCommand != null) {
             invisibleFrameCommand.setExecutor(new InvisibleFrameCommand(getConfig()));
         }
+
+        if (getConfig().getBoolean("heads.enabled")) {
+            new HeadOnDeathManager(this);
+        }
     }
 }

@@ -4,3 +4,15 @@ messages:
     nothing-in-main-hand: "§cPlace the item you want to equip in your hand."
   iframe:
     look-at-frame: "§cLook at the item frame you wish to render invisible."
+
+heads:
+  # If enabled, players killed by another player will drop their head.
+  enabled: true
+
+  # Text that will appear on the head.
+  lore:
+    text: "Killed by {KILLER} ({DATE})."
+    date-format: "yyyy-MM-dd"
+
+  # Delay in seconds to prevent players from generating too many heads.
+  delay-between-two-identical-drops: 3600
