@@ -1,25 +1,23 @@
 package eu.hiddenite.fun;
 
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
 
 public class FunPlugin extends JavaPlugin {
     @Override
     public void onEnable()  {
         saveDefaultConfig();
 
-        PluginCommand hatCommand = getCommand("hat");
-        if (hatCommand != null) {
-            hatCommand.setExecutor(new HatCommand(getConfig()));
-        }
-
-        PluginCommand invisibleFrameCommand = getCommand("iframe");
-        if (invisibleFrameCommand != null) {
-            invisibleFrameCommand.setExecutor(new InvisibleFrameCommand(getConfig()));
-        }
+        Objects.requireNonNull(getCommand("hat")).setExecutor(new HatCommand(getConfig()));
+        Objects.requireNonNull(getCommand("iframe")).setExecutor(new InvisibleFrameCommand(getConfig()));
 
         if (getConfig().getBoolean("heads.enabled")) {
             new HeadOnDeathManager(this);
+        }
+
+        if (getConfig().getBoolean("custom-recipes.enabled")) {
+            new CustomRecipesManager(this);
         }
     }
 }
