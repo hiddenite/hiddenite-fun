@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class HatCommand implements CommandExecutor, TabCompleter {
-    private String alreadySomethingInHelmetSlot;
-    private String nothingInMainHand;
+    private final String alreadySomethingInHelmetSlot;
+    private final String nothingInMainHand;
 
     public HatCommand(FileConfiguration configuration) {
         alreadySomethingInHelmetSlot = configuration.getString("messages.hat.already-something-in-helmet-slot");
@@ -25,12 +25,10 @@ public class HatCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender,
                              @NotNull Command command,
                              @NotNull String alias,
-                             String[] args) {
-        if (!(sender instanceof Player)) {
+                             @NotNull String[] args) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
-
-        Player player = (Player)sender;
 
         if (player.getInventory().getHelmet() == null) {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
@@ -55,7 +53,7 @@ public class HatCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender,
                                       @NotNull Command command,
                                       @NotNull String alias,
-                                      String[] args) {
+                                      @NotNull String[] args) {
         return Collections.emptyList();
     }
 }

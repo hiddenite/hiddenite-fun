@@ -19,3 +19,6 @@ permissions:
   hiddenite.iframe:
     description: "Allows the /iframe command"
     default: op
+  hiddenite.fun.spore_blossom:
+    description: "Allows the player to craft spore blossom."
+    default: op

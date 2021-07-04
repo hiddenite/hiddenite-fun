@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class InvisibleFrameCommand implements CommandExecutor, TabCompleter {
-    private String lookAtFrame;
+    private final String lookAtFrame;
 
     public InvisibleFrameCommand(FileConfiguration configuration) {
         lookAtFrame = configuration.getString("messages.iframe.look-at-frame");
@@ -29,11 +29,9 @@ public class InvisibleFrameCommand implements CommandExecutor, TabCompleter {
                              @NotNull Command command,
                              @NotNull String alias,
                              String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
-
-        Player player = (Player)sender;
 
         Block block = player.getTargetBlockExact(6);
         BlockFace face = player.getTargetBlockFace(6);

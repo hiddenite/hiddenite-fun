@@ -122,7 +122,7 @@ public class HeadOnDeathManager implements Listener {
         }
 
         if (!previousLoots.containsKey(player.getUniqueId())) {
-            previousLoots.put(player.getUniqueId(), new HashMap<UUID, Date>());
+            previousLoots.put(player.getUniqueId(), new HashMap<>());
         }
 
         Date now = new Date();
