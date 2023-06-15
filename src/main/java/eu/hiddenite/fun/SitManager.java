@@ -22,7 +22,7 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
     public SitManager(FunPlugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        key = new NamespacedKey(plugin, "hiddenite_sit");
+        key = new NamespacedKey(plugin, "hiddenite_seat");
     }
 
     @Override
