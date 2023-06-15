@@ -12,6 +12,10 @@ commands:
     permission: hiddenite.iframe
     description: "Make item frames invisible!"
     usage: "/<command>"
+  sit:
+    permission: hiddenite.sit
+    description: "Sit anywhere when you are tired."
+    usage: "/<command>"
 permissions:
   hiddenite.hat:
     description: "Allows the /hat command"
