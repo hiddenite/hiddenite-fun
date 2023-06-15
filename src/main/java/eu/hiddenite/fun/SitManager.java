@@ -9,6 +9,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -36,11 +37,10 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
 
         ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().add(0, -1.70, 0), EntityType.ARMOR_STAND);
         armorStand.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
+        armorStand.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(1);
         armorStand.setInvulnerable(true);
         armorStand.setCollidable(false);
         armorStand.setGravity(false);
-        armorStand.setSilent(true);
-        armorStand.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(1);
         armorStand.setVisible(false);
         armorStand.setPassenger(player);
 
@@ -71,6 +71,20 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
 
         event.getDismounted().remove();
         player.teleport(player.getLocation().add(0, 1, 0));
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event) {
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (entity.getType() != EntityType.ARMOR_STAND) {
+                continue;
+            }
+            if (entity.getPersistentDataContainer().getOrDefault(key, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
+                continue;
+            }
+
+            entity.remove();
+        }
     }
 
 }
