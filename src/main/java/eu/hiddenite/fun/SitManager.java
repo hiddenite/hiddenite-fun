@@ -18,12 +18,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class SitManager implements CommandExecutor, TabCompleter, Listener {
-    NamespacedKey key;
+    private final FunPlugin plugin;
+    private final NamespacedKey key;
 
     public SitManager(FunPlugin plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        this.plugin = plugin;
+        this.key = new NamespacedKey(plugin, "hiddenite_seat");
 
-        key = new NamespacedKey(plugin, "hiddenite_seat");
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
@@ -35,6 +37,18 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
             return false;
         }
 
+        if (player.getVehicle() != null) {
+            if (player.getVehicle().getType() == EntityType.ARMOR_STAND && player.getVehicle().getPersistentDataContainer().getOrDefault(key, PersistentDataType.BYTE, (byte) 1) == (byte) 1) {
+                plugin.getLogger().info("[Sit] Ejecting " + player.getName());
+                player.getVehicle().removePassenger(player);
+            }
+            return true;
+        }
+
+        if (!player.isOnGround()) {
+            return true;
+        }
+
         ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().add(0, -1.70, 0), EntityType.ARMOR_STAND);
         armorStand.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
         armorStand.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(1);
@@ -42,8 +56,9 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
         armorStand.setCollidable(false);
         armorStand.setGravity(false);
         armorStand.setVisible(false);
-        armorStand.setPassenger(player);
+        armorStand.addPassenger(player);
 
+        plugin.getLogger().info("[Sit] Spawned an ArmorStand for " + player.getName());
         return true;
     }
 
@@ -69,6 +84,7 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
             return;
         }
 
+        plugin.getLogger().info("[Sit] Destroying the ArmorStand of " + player.getName());
         event.getDismounted().remove();
         player.teleport(player.getLocation().add(0, 1, 0));
     }
@@ -83,6 +99,7 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
                 continue;
             }
 
+            plugin.getLogger().info("[Sit] Removing a stranded ArmorStand: " + entity);
             entity.remove();
         }
     }
