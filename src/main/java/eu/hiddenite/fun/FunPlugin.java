@@ -11,6 +11,7 @@ public class FunPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("hat")).setExecutor(new HatCommand(getConfig()));
         Objects.requireNonNull(getCommand("iframe")).setExecutor(new InvisibleFrameCommand(getConfig()));
+        Objects.requireNonNull(getCommand("sit")).setExecutor(new SitManager(this));
 
         if (getConfig().getBoolean("heads.enabled")) {
             new HeadOnDeathManager(this);
