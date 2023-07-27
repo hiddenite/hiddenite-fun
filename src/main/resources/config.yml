@@ -4,6 +4,11 @@ messages:
     nothing-in-main-hand: "§cPlace the item you want to equip in your hand."
   iframe:
     look-at-frame: "§cLook at the item frame you wish to render invisible."
+  firework:
+    firework-small-info: "§bYou have {USAGES_LEFT}/{MAX_USAGES} firework{S} left."
+    firework-info: "§bYou have {USAGES_LEFT}/{MAX_USAGES} firework{S1} left (Next firework in {NEXT_FIREWORK_TIME} second{S2})."
+    no-firework-usages-left: "§cYou don't have any firework usages left."
+    firework-usage: "§b/firework [info]"
 
 heads:
   # If enabled, players killed by another player will drop their head.
@@ -16,6 +21,15 @@ heads:
 
   # Delay in seconds to prevent players from generating too many heads.
   delay-between-two-identical-drops: 3600
+
+firework:
+  # How many fireworks you can stack
+  firework-max-stack: 16
+  # How many fireworks you refill (firework-refill) at which frequency in seconds (firework-refill-time)
+  firework-refill: 1
+  firework-refill-time: 3600
+  # How many firework you want to give after a reboot of the server / plugin (or when the player uses the command for the first time)
+  firework-after-reboot: 16
 
 custom-recipes:
   enabled: true

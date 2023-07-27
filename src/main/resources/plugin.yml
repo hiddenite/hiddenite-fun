@@ -16,6 +16,10 @@ commands:
     permission: hiddenite.sit
     description: "Sit anywhere when you are tired."
     usage: "/<command>"
+  firework:
+    permission: hiddenite.firework
+    description: "Throw a random firework above your head to make the party funnier."
+    usage: "/<command> [info]"
 permissions:
   hiddenite.hat:
     description: "Allows the /hat command"
@@ -25,4 +29,7 @@ permissions:
     default: op
   hiddenite.fun.spore_blossom:
     description: "Allows the player to craft spore blossom."
+    default: op
+  hiddenite.firework:
+    description: "Allows the /firework command"
     default: op
