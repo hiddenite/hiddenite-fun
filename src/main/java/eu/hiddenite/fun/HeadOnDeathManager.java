@@ -3,26 +3,32 @@ package eu.hiddenite.fun;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
-public class HeadOnDeathManager implements Listener {
+public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listener {
     private final FunPlugin plugin;
 
     private final HashMap<UUID, HashMap<UUID, Date>> previousLoots = new HashMap<>();
@@ -33,6 +39,8 @@ public class HeadOnDeathManager implements Listener {
     private final String loreText;
     private final DateFormat loreDateFormat;
     private final int delayBetweenTwoIdenticalDrops;
+
+    private final String notAPlayer;
 
     public HeadOnDeathManager(FunPlugin plugin) {
         this.plugin = plugin;
@@ -49,7 +57,44 @@ public class HeadOnDeathManager implements Listener {
         }
         delayBetweenTwoIdenticalDrops = plugin.getConfig().getInt("heads.delay-between-two-identical-drops");
 
+        notAPlayer = plugin.getConfig().getString("messages.give-head.not-a-player");
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String alias,
+                             @NotNull String[] args) {
+
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(notAPlayer);
+            return true;
+        }
+
+        if (args.length != 2) {
+            return false;
+        }
+
+        OfflinePlayer killer = plugin.getServer().getOfflinePlayer(args[0]);
+        OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[1]);
+
+        player.getInventory().addItem(createPlayerHeadItem(killer, victim, new Date()));
+        return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
+                                                @NotNull Command command,
+                                                @NotNull String alias,
+                                                @NotNull String[] args) {
+
+        if (args.length < 3) {
+            return null;
+        }
+
+        return Collections.emptyList();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -89,22 +134,7 @@ public class HeadOnDeathManager implements Listener {
             return;
         }
 
-        Skull blockSkull = (Skull)event.getBlock().getState();
-
-        String killerString = blockSkull.getPersistentDataContainer().get(killerNamespaceKey, PersistentDataType.STRING);
-        if (killerString == null) {
-            return;
-        }
-
-        UUID killerUUID = UUID.fromString(killerString);
-        OfflinePlayer killerPlayer = plugin.getServer().getOfflinePlayer(killerUUID);
-
-        Long timestamp = blockSkull.getPersistentDataContainer().get(dateNamespaceKey, PersistentDataType.LONG);
-        if (timestamp == null) {
-            return;
-        }
-
-        ItemStack headItem = createPlayerHeadItem(killerPlayer, blockSkull.getOwningPlayer(), new Date(timestamp));
+        ItemStack headItem = getHeadItemFromBlock(event.getBlock());
 
         event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), headItem);
         event.setDropItems(false);
@@ -143,6 +173,75 @@ public class HeadOnDeathManager implements Listener {
         event.getDrops().add(headItem);
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onEntityExplodeEvent(EntityExplodeEvent event) {
+        List<Integer> blocksToRemove = new ArrayList<>();
+
+        for (int i = 0; i < event.blockList().size(); i++) {
+            Block block = event.blockList().get(i);
+            if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
+                continue;
+            }
+
+            ItemStack headItem = getHeadItemFromBlock(block);
+            if (headItem == null) {
+                continue;
+            }
+
+            block.getWorld().dropItemNaturally(block.getLocation(), headItem);
+            blocksToRemove.add(i);
+        }
+
+        for (int i : blocksToRemove) {
+            event.blockList().get(i).setType(Material.AIR);
+            event.blockList().remove(i);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onBlockExplodeEvent(BlockExplodeEvent event) {
+        List<Integer> blocksToRemove = new ArrayList<>();
+
+        for (int i = 0; i < event.blockList().size(); i++) {
+            Block block = event.blockList().get(i);
+            if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
+                continue;
+            }
+
+            ItemStack headItem = getHeadItemFromBlock(block);
+            if (headItem == null) {
+                continue;
+            }
+
+            block.getWorld().dropItemNaturally(block.getLocation(), headItem);
+            blocksToRemove.add(i);
+        }
+
+        for (int i : blocksToRemove) {
+            event.blockList().get(i).setType(Material.AIR);
+            event.blockList().remove(i);
+        }
+    }
+
+    private ItemStack getHeadItemFromBlock(Block block) {
+        Skull blockSkull = (Skull)block.getState();
+
+        String killerString = blockSkull.getPersistentDataContainer().get(killerNamespaceKey, PersistentDataType.STRING);
+        if (killerString == null) {
+            return null;
+        }
+
+        UUID killerUUID = UUID.fromString(killerString);
+        OfflinePlayer killerPlayer = plugin.getServer().getOfflinePlayer(killerUUID);
+
+        Long timestamp = blockSkull.getPersistentDataContainer().get(dateNamespaceKey, PersistentDataType.LONG);
+        if (timestamp == null) {
+            return null;
+        }
+
+        return createPlayerHeadItem(killerPlayer, blockSkull.getOwningPlayer(), new Date(timestamp));
+    }
+
     private ItemStack createPlayerHeadItem(OfflinePlayer killer, OfflinePlayer victim, Date when) {
         ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
 
@@ -163,4 +262,5 @@ public class HeadOnDeathManager implements Listener {
 
         return headItem;
     }
+
 }

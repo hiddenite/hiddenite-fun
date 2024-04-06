@@ -14,7 +14,8 @@ public class FunPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("sit")).setExecutor(new SitManager(this));
 
         if (getConfig().getBoolean("heads.enabled")) {
-            new HeadOnDeathManager(this);
+            HeadOnDeathManager headOnDeathManager = new HeadOnDeathManager(this);
+            Objects.requireNonNull(getCommand("give-head")).setExecutor(headOnDeathManager);
         }
 
         if (getConfig().getBoolean("custom-recipes.enabled")) {

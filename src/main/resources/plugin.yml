@@ -16,12 +16,22 @@ commands:
     permission: hiddenite.sit
     description: "Sit anywhere when you are tired."
     usage: "/<command>"
+  give-head:
+    permission: hiddenite.give-head
+    description: "Create fake kill heads."
+    usage: "/<command> <killer> <victim>"
 permissions:
   hiddenite.hat:
     description: "Allows the /hat command"
     default: op
   hiddenite.iframe:
     description: "Allows the /iframe command"
+    default: op
+  hiddenite.sit:
+    description: "Allows the /sit command"
+    default: op
+  hiddenite.give-head:
+    description: "Allows the /give-head command"
     default: op
   hiddenite.fun.spore_blossom:
     description: "Allows the player to craft spore blossom."
