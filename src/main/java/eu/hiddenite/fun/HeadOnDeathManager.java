@@ -175,7 +175,7 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityExplodeEvent(EntityExplodeEvent event) {
-        List<Integer> blocksToRemove = new ArrayList<>();
+        List<Block> blocksToRemove = new ArrayList<>();
 
         for (int i = 0; i < event.blockList().size(); i++) {
             Block block = event.blockList().get(i);
@@ -189,18 +189,18 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
             }
 
             block.getWorld().dropItemNaturally(block.getLocation(), headItem);
-            blocksToRemove.add(i);
+            blocksToRemove.add(block);
         }
 
-        for (int i : blocksToRemove) {
-            event.blockList().get(i).setType(Material.AIR);
-            event.blockList().remove(i);
+        for (Block block : blocksToRemove) {
+            block.setType(Material.AIR);
+            event.blockList().remove(block);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockExplodeEvent(BlockExplodeEvent event) {
-        List<Integer> blocksToRemove = new ArrayList<>();
+        List<Block> blocksToRemove = new ArrayList<>();
 
         for (int i = 0; i < event.blockList().size(); i++) {
             Block block = event.blockList().get(i);
@@ -214,12 +214,12 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
             }
 
             block.getWorld().dropItemNaturally(block.getLocation(), headItem);
-            blocksToRemove.add(i);
+            blocksToRemove.add(block);
         }
 
-        for (int i : blocksToRemove) {
-            event.blockList().get(i).setType(Material.AIR);
-            event.blockList().remove(i);
+        for (Block block : blocksToRemove) {
+            block.setType(Material.AIR);
+            event.blockList().remove(block);
         }
     }
 
