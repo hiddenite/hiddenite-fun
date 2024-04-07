@@ -174,36 +174,20 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onEntityExplodeEvent(EntityExplodeEvent event) {
-        List<Block> blocksToRemove = new ArrayList<>();
-
-        for (int i = 0; i < event.blockList().size(); i++) {
-            Block block = event.blockList().get(i);
-            if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
-                continue;
-            }
-
-            ItemStack headItem = getHeadItemFromBlock(block);
-            if (headItem == null) {
-                continue;
-            }
-
-            block.getWorld().dropItemNaturally(block.getLocation(), headItem);
-            blocksToRemove.add(block);
-        }
-
-        for (Block block : blocksToRemove) {
-            block.setType(Material.AIR);
-            event.blockList().remove(block);
-        }
+    public void onBlockExplodeEvent(BlockExplodeEvent event) {
+        handleExplosion(event.blockList());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onBlockExplodeEvent(BlockExplodeEvent event) {
+    public void onEntityExplodeEvent(EntityExplodeEvent event) {
+        handleExplosion(event.blockList());
+    }
+
+    private void handleExplosion(List<Block> blockList) {
         List<Block> blocksToRemove = new ArrayList<>();
 
-        for (int i = 0; i < event.blockList().size(); i++) {
-            Block block = event.blockList().get(i);
+        for (int i = 0; i < blockList.size(); i++) {
+            Block block = blockList.get(i);
             if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
                 continue;
             }
@@ -219,7 +203,7 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
 
         for (Block block : blocksToRemove) {
             block.setType(Material.AIR);
-            event.blockList().remove(block);
+            blockList.remove(block);
         }
     }
 
