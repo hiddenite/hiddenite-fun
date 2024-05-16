@@ -4,6 +4,8 @@ messages:
     nothing-in-main-hand: "§cPlace the item you want to equip in your hand."
   iframe:
     look-at-frame: "§cLook at the item frame you wish to render invisible."
+  give-head:
+    not-a-player: "§cOnly a player can get an item."
 
 heads:
   # If enabled, players killed by another player will drop their head.
