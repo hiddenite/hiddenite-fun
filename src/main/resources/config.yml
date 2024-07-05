@@ -18,6 +18,3 @@ heads:
 
   # Delay in seconds to prevent players from generating too many heads.
   delay-between-two-identical-drops: 3600
-
-custom-recipes:
-  enabled: true
