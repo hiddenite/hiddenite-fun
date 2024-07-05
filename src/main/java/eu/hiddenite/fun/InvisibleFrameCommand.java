@@ -1,5 +1,6 @@
 package eu.hiddenite.fun;
 
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -60,9 +61,9 @@ public class InvisibleFrameCommand implements CommandExecutor, TabCompleter {
 
         selectedFrame.setVisible(!selectedFrame.isVisible());
         selectedFrame.getWorld().spawnParticle(
-                Particle.SPELL_MOB,
+                Particle.ENTITY_EFFECT,
                 selectedFrame.getLocation(),
-                8, 0.1, 0, 0.1);
+                8, Color.fromRGB(120, 255, 160));
 
         selectedFrame.getWorld().playSound(selectedFrame.getLocation(), Sound.BLOCK_LANTERN_BREAK, 0.5f, 0.8f);
         return true;
