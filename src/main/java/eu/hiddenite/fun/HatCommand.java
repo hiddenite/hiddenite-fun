@@ -1,5 +1,6 @@
 package eu.hiddenite.fun;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,13 +31,13 @@ public class HatCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (player.getInventory().getHelmet() == null) {
+        if (player.getInventory().getHelmet() == null || player.getInventory().getHelmet().getType() == Material.AIR) {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             if (itemInHand.getAmount() > 0) {
                 ItemStack copy = itemInHand.clone();
                 copy.setAmount(1);
                 player.getInventory().setHelmet(copy);
-                if (player.getInventory().getHelmet() != null) {
+                if (player.getInventory().getHelmet() != null || player.getInventory().getHelmet().getType() == Material.AIR) {
                     itemInHand.setAmount(itemInHand.getAmount() - 1);
                 }
             } else {

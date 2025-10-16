@@ -1,5 +1,7 @@
 package eu.hiddenite.fun;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
@@ -80,7 +82,9 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
         OfflinePlayer killer = plugin.getServer().getOfflinePlayer(args[0]);
         OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[1]);
 
-        player.getInventory().addItem(createPlayerHeadItem(killer, victim, new Date()));
+        victim.getPlayerProfile().update().thenAcceptAsync(updatedProfile -> {
+            player.getInventory().addItem(createPlayerHeadItem(killer, updatedProfile, new Date()));
+        }, runnable -> Bukkit.getScheduler().runTask(plugin, runnable));
         return true;
     }
 
@@ -134,10 +138,9 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
             return;
         }
 
-        ItemStack headItem = getHeadItemFromBlock(event.getBlock());
-
-        event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), headItem);
-        event.setDropItems(false);
+        if (dropHeadItemFromBlock(event.getBlock())) {
+            event.setDropItems(false);
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -169,7 +172,7 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
 
         plugin.getLogger().info(killer.getName() + " looted " + player.getName() + "'s head");
 
-        ItemStack headItem = createPlayerHeadItem(killer, player, new Date());
+        ItemStack headItem = createPlayerHeadItem(killer, player.getPlayerProfile(), new Date());
         event.getDrops().add(headItem);
     }
 
@@ -186,19 +189,14 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
     private void handleExplosion(List<Block> blockList) {
         List<Block> blocksToRemove = new ArrayList<>();
 
-        for (int i = 0; i < blockList.size(); i++) {
-            Block block = blockList.get(i);
+        for (Block block : blockList) {
             if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
                 continue;
             }
 
-            ItemStack headItem = getHeadItemFromBlock(block);
-            if (headItem == null) {
-                continue;
+            if (dropHeadItemFromBlock(block)) {
+                blocksToRemove.add(block);
             }
-
-            block.getWorld().dropItemNaturally(block.getLocation(), headItem);
-            blocksToRemove.add(block);
         }
 
         for (Block block : blocksToRemove) {
@@ -207,12 +205,12 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
         }
     }
 
-    private ItemStack getHeadItemFromBlock(Block block) {
+    private boolean dropHeadItemFromBlock(Block block) {
         Skull blockSkull = (Skull)block.getState();
 
         String killerString = blockSkull.getPersistentDataContainer().get(killerNamespaceKey, PersistentDataType.STRING);
         if (killerString == null) {
-            return null;
+            return false;
         }
 
         UUID killerUUID = UUID.fromString(killerString);
@@ -220,18 +218,28 @@ public class HeadOnDeathManager implements CommandExecutor, TabCompleter, Listen
 
         Long timestamp = blockSkull.getPersistentDataContainer().get(dateNamespaceKey, PersistentDataType.LONG);
         if (timestamp == null) {
-            return null;
+            return false;
         }
 
-        return createPlayerHeadItem(killerPlayer, blockSkull.getOwningPlayer(), new Date(timestamp));
+        OfflinePlayer victim = blockSkull.getOwningPlayer();
+        if (victim == null) {
+            return false;
+        }
+
+        blockSkull.getOwningPlayer().getPlayerProfile().update().thenAcceptAsync(updatedProfile -> {
+            ItemStack headItem = createPlayerHeadItem(killerPlayer, updatedProfile, new Date(timestamp));
+            block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), headItem);
+        }, runnable -> Bukkit.getScheduler().runTask(plugin, runnable));
+
+        return true;
     }
 
-    private ItemStack createPlayerHeadItem(OfflinePlayer killer, OfflinePlayer victim, Date when) {
+    private ItemStack createPlayerHeadItem(OfflinePlayer killer, PlayerProfile victimProfile, Date when) {
         ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
 
         SkullMeta skull = (SkullMeta) headItem.getItemMeta();
-        if (skull != null) {
-            skull.setOwningPlayer(victim);
+        if (skull != null){
+            skull.setPlayerProfile(victimProfile);
 
             String killerName = killer.getName() != null ? killer.getName() : "???";
             String itemLore = loreText

@@ -51,7 +51,7 @@ public class SitManager implements CommandExecutor, TabCompleter, Listener {
 
         ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().add(0, -1.70, 0), EntityType.ARMOR_STAND);
         armorStand.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
-        armorStand.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(1);
+        armorStand.getAttribute(Attribute.MAX_HEALTH).setBaseValue(1);
         armorStand.setInvulnerable(true);
         armorStand.setCollidable(false);
         armorStand.setGravity(false);
